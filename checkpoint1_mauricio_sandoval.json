@@ -1,0 +1,188 @@
+{
+  "name": "Checkpoint 1 - Agente Base Tonina - Mauricio Sandoval",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "42ca0711-074c-4676-9375-c3789c172c73",
+      "name": "When chat message received",
+      "webhookId": "abc8223b-e435-4c48-acd0-beb9792e6cfc"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        240
+      ],
+      "id": "81401181-3759-4344-bb66-66a59948ef0b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yDAgYFyUgOPuOJiz",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consulta la base comercial de Tonina en Google Sheets cuando el usuario pregunte por productos, disponibilidad, stock, precios de referencia, modalidad de venta o condiciones comerciales registradas. Debes activar esta herramienta de forma autónoma antes de responder cuando la solicitud dependa de datos almacenados. No la uses para saludos, conversación general ni consultas que no requieran revisar la base. Si la herramienta no devuelve información suficiente, informa que el caso requiere revisión humana y no inventes datos.",
+        "documentId": {
+          "__rl": true,
+          "value": "1F5T7En2kqT4bKrkAI-cI6dx-ot0nQItJ9Vv-V1908i0",
+          "mode": "list",
+          "cachedResultName": "Entrada_Tonina_Prueba",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F5T7En2kqT4bKrkAI-cI6dx-ot0nQItJ9Vv-V1908i0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F5T7En2kqT4bKrkAI-cI6dx-ot0nQItJ9Vv-V1908i0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": " producto",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        240
+      ],
+      "id": "2b735d90-ef70-49fc-833f-41f4e16dd0e8",
+      "name": "Consultar Base Comercial Tonina",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "M9sVSxqRVYahTmWZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mauriciosanolv123@gmail.com",
+        "subject": "Checkpoint 1 - Log Agente Tonina",
+        "emailType": "text",
+        "message": "=CHECKPOINT 1 - OBSERVABILIDAD TONINA\n\nConsulta original:\n{{ $('When chat message received').item.json.chatInput }}\n\nResultado del agente:\n{{ $json.output || $json.text || JSON.stringify($json) }}\n\nFecha de ejecución:\n{{ $now.toISO() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "49a12a64-037f-4e8b-b94f-78fba03db595",
+      "name": "Gmail - Log Observabilidad",
+      "webhookId": "c5bae27b-7b0e-42a3-b319-59a6a657106c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "r0dUVoRnNRPQVv8V",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## ROL\nEres el Asistente Comercial de Tonina.\n\n## ÁMBITO\nAtiendes consultas relacionadas con productos, disponibilidad, stock, precios de referencia, venta al detalle, venta mayorista y condiciones comerciales registradas en las herramientas disponibles.\n\nNo inventes precios, stock, promociones, condiciones, plazos ni políticas.\n\nNo realices pagos, devoluciones, descuentos ni modificaciones de información crítica.\n\nNo utilices lenguaje inclusivo.\n\n## OBJETIVO\nComprender la solicitud del usuario y entregar una respuesta clara utilizando únicamente información verificable.\n\nCuando la respuesta dependa de información almacenada en una herramienta, debes consultar dicha herramienta antes de responder.\n\n## REGLAS DE HERRAMIENTAS\nUsa la herramienta \"Consultar Base Comercial Tonina\" cuando el usuario solicite información sobre productos, stock, precios de referencia, disponibilidad, modalidad de venta u otra información comercial registrada.\n\nNo respondas de memoria cuando la información pueda ser consultada mediante una herramienta.\n\nUtiliza únicamente la información devuelta por la herramienta.\n\n## ESCALAMIENTO\nSi la consulta requiere una decisión comercial especial, descuento, devolución, excepción o información que no esté disponible en las herramientas, indica que el caso requiere revisión humana.\n\nNo inventes una solución.",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        0
+      ],
+      "id": "716799e8-cc82-4ac5-b04e-2f33dff49051",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Base Comercial Tonina": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Log Observabilidad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d0dd315a-0163-4bbd-a92f-6907f36c9955",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2087be6ef69d82fcfe1e98ff0824cd0c7e7c616fc3ebe11f80d6f1e1ba5e7cb5"
+  },
+  "nodeGroups": [],
+  "id": "a3ZMMWVJbV0JcuHv",
+  "tags": []
+}
